@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FqEMS - Faculty Electricity Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>FqEMS</h1>
+                <div class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <p class="user-name">Guest User</p>
+                    <p class="user-role">Not logged in</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-page="login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </li>
+                    <li class="nav-item hidden" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item hidden admin-only" data-page="upload">
+                        <i class="fas fa-upload"></i>
+                        <span>Upload Data</span>
+                    </li>
+                    <li class="nav-item hidden" data-page="bills">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Bills</span>
+                    </li>
+                    <li class="nav-item hidden admin-only" data-page="analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </li>
+                    <li class="nav-item hidden" data-page="profile">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Profile</span>
+                    </li>
+                    <li class="nav-item hidden" data-page="logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="content">
+            <!-- Login Page -->
+            <section id="login" class="page active">
+                <div class="login-container">
+                    <div class="login-card">
+                        <h2>Welcome to FqEMS</h2>
+                        <p>Faculty Electricity Management System</p>
+                        <form id="login-form">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Page -->
+            <section id="dashboard" class="page">
+                <h2>Dashboard</h2>
+                <div class="stats-section">
+                    <h3>Summary Statistics</h3>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Current Month Usage</h3>
+                                <p class="stat-value" id="current-usage">0 kWh</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Current Bill Amount</h3>
+                                <p class="stat-value" id="current-bill">₹0.00</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Last Updated</h3>
+                                <p class="stat-value" id="last-updated">Never</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="analytics-section admin-only">
+                    <h3>Detailed Analytics</h3>
+                    <div class="dashboard-charts">
+                        <div class="chart-container card">
+                            <h3>Monthly Usage Trend</h3>
+                            <canvas id="usage-chart"></canvas>
+                        </div>
+                        <div class="chart-container card">
+                            <h3>Daily Consumption</h3>
+                            <canvas id="daily-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Data Page (Admin Only) -->
+            <section id="upload" class="page admin-only">
+                <h2>Upload Electricity Data</h2>
+                <div class="upload-container">
+                    <div class="upload-card">
+                        <div class="upload-area" id="drop-area">
+                            <i class="fas fa-file-excel fa-3x"></i>
+                            <p>Drag & drop Excel/CSV files here</p>
+                            <p>or</p>
+                            <label for="file-input" class="btn btn-outline">Browse Files</label>
+                            <input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple class="hidden">
+                        </div>
+                        <div class="upload-info hidden" id="upload-info">
+                            <div class="file-info">
+                                <i class="fas fa-file-excel"></i>
+                                <span id="file-name">filename.xlsx</span>
+                                <span id="file-size">(123 KB)</span>
+                            </div>
+                            <button class="btn btn-primary" id="process-btn">Process Data</button>
+                        </div>
+                    </div>
+                    <div class="preview-card hidden" id="preview-card">
+                        <h3>Data Preview</h3>
+                        <div class="preview-controls">
+                            <button class="btn btn-outline" id="validate-btn">Validate Data</button>
+                            <button class="btn btn-primary" id="save-btn">Save to Database</button>
+                        </div>
+                        <div class="preview-table-container">
+                            <table class="preview-table" id="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Faculty</th>
+                                        <th>Consumption (kWh)</th>
+                                        <th>Cost (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bills Page -->
+            <section id="bills" class="page">
+                <h2>Electricity Bills</h2>
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="month-filter">Month:</label>
+                        <select id="month-filter">
+                            <option value="current">Current Month</option>
+                            <option value="jan">January</option>
+                            <option value="feb">February</option>
+                            <option value="mar">March</option>
+                            <option value="apr">April</option>
+                            <option value="may">May</option>
+                            <option value="jun">June</option>
+                            <option value="jul">July</option>
+                            <option value="aug">August</option>
+                            <option value="sep">September</option>
+                            <option value="oct">October</option>
+                            <option value="nov">November</option>
+                            <option value="dec">December</option>
+                        </select>
+                    </div>
+                    <div class="filter-group admin-only">
+                        <label for="floor-filter">Floor:</label>
+                        <select id="floor-filter">
+                            <option value="all">All Floors</option>
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="filter-group admin-only">
+                        <label for="flat-filter">Flat:</label>
+                        <select id="flat-filter">
+                            <option value="all">All Flats</option>
+                            <!-- Will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="bills-container" id="bills-container">
+                    <!-- Bills will be populated here -->
+                </div>
+            </section>
+
+            <!-- Analytics Page (Admin Only) -->
+            <section id="analytics" class="page">
+                <h2>Analytics Dashboard</h2>
+                <div class="analytics-filters">
+                    <div class="filter-group">
+                        <label for="analytics-period">Time Period:</label>
+                        <select id="analytics-period">
+                            <option value="daily">Daily</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="analytics-metric">Metric:</label>
+                        <select id="analytics-metric">
+                            <option value="units">Units Consumed</option>
+                            <option value="cost">Cost</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="analytics-charts">
+                    <div class="chart-container full-width">
+                        <h3>Consumption Overview</h3>
+                        <canvas id="overview-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Floor-wise Distribution</h3>
+                        <canvas id="floor-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Flat-wise Distribution</h3>
+                        <canvas id="flat-chart"></canvas>
+                    </div>
+                </div>
+                <div class="export-container">
+                    <h3>Export Data</h3>
+                    <div class="export-buttons">
+                        <button class="btn btn-outline" id="export-csv">
+                            <i class="fas fa-file-csv"></i> Export as CSV
+                        </button>
+                        <button class="btn btn-outline" id="export-pdf">
+                            <i class="fas fa-file-pdf"></i> Export as PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Page -->
+            <section id="profile" class="page">
+                <h2>User Profile</h2>
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user-circle fa-5x"></i>
+                            </div>
+                            <div class="profile-info">
+                                <h3 id="profile-name">User Name</h3>
+                                <p id="profile-role">Role</p>
+                                <p id="profile-flat">Floor: 0, Flat: 0</p>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Email:</span>
+                                <span class="detail-value" id="profile-email">user@example.com</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Phone:</span>
+                                <span class="detail-value" id="profile-phone">Not set</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Joined:</span>
+                                <span class="detail-value" id="profile-joined">January 1, 2023</span>
+                            </div>
+                        </div>
+                        <div class="profile-controls" id="profile-controls"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for bill details -->
+    <div class="modal" id="bill-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bill Details</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="bill-details">
+                <!-- Bill details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="download-bill">Download PDF</button>
+                <button class="btn btn-secondary close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
