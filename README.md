@@ -1,78 +1,130 @@
-# College Electricity Billing Dashboard System
+⚡ College Electricity Billing Dashboard System
 
-A modern, minimal web application for managing electricity billing for college faculty buildings.
+A minimal, modern, client-side electricity billing dashboard for college faculty buildings.
 
-## Features
 
-### Admin Features
-- Upload Excel/CSV of meter readings
-- Auto-extract, clean, and display structured data
-- View all flats' bills
-- View dashboards and analytical charts (daily/monthly/yearly)
-- Export data as CSV/PDF
 
-### Faculty Features
-- Secure login
-- View only their own unit and bill data
-- Charts: usage trend, previous bill comparison
-- Download their bill
 
-## Data Engineering Pipeline
-1. Data Collection (Excel/CSV upload)
-2. Data Cleaning & Validation
-3. Data Transformation & Unit/Bill Calculation
-4. Data Storage (local storage)
-5. Data Analytics (summary, trends, comparisons)
-6. Visualization (charts, usage graphs)
-7. Reporting & Export (CSV/PDF)
 
-## Setup Instructions
 
-### Prerequisites
-- Modern web browser (Chrome, Firefox, Edge, Safari)
-- No server required (runs entirely in the browser)
 
-### Installation
-1. Download or clone this repository
-2. Open `index.html` in your web browser
 
-### Login Credentials
+🔥 Overview
 
-#### Admin
-- Username: admin
-- Password: admin123
+A lightweight browser-based dashboard for managing faculty electricity bills using Excel/CSV uploads, auto-processing, and interactive visualizations — no backend or server needed.
 
-#### Faculty
-- Username: faculty1
-- Password: faculty123
-- (Dr. Sharma, Floor 1, Flat 101)
+Built for simplicity, transparency, and fast deployment.
 
-- Username: faculty2
-- Password: faculty123
-- (Dr. Patel, Floor 2, Flat 201)
+✅ Features
+🛠️ Admin
 
-## Usage
+Upload Excel/CSV meter readings
 
-### Admin
-1. Login with admin credentials
-2. Navigate to "Upload Data" to upload meter readings (use sample_data.csv for testing)
-3. Process the data and save it
-4. View dashboards, bills, and analytics
-5. Export data as needed
+Auto-extract, clean & structure data
 
-### Faculty
-1. Login with faculty credentials
-2. View your dashboard with current bill and usage trends
-3. Navigate to "Bills" to view and download your bills
-4. Check "Analytics" for detailed usage charts
+Global dashboard for all flats
 
-## Technologies Used
-- HTML5
-- CSS3 (with CSS Variables for theming)
-- JavaScript (Vanilla)
-- Chart.js for data visualization
-- SheetJS for Excel parsing
-- jsPDF for PDF generation
+Analytical charts (daily / monthly / yearly)
 
-## License
+Export as CSV or PDF
+
+Local storage persistence
+
+👤 Faculty
+
+Secure login
+
+View only their unit & billing history
+
+Trend charts (usage, past bill comparison)
+
+Download their bill as PDF
+
+📊 Data Pipeline
+Upload → Clean → Transform → Calculate Units/Bill → Store → Analyze → Visualize → Export
+
+🚀 Live Demo
+
+🔗 Netlify Deployment: your Netlify link here
+
+🧩 Tech Stack
+
+HTML5, CSS3
+
+Vanilla JavaScript
+
+Chart.js – interactive charts
+
+SheetJS (xlsx) – Excel/CSV parsing
+
+jsPDF – bill generation
+
+LocalStorage – no backend required
+
+🗂️ Setup Instructions
+✅ Prerequisites
+
+Any modern web browser
+
+No server / no installation needed
+
+✅ Installation
+git clone https://github.com/just0dj/college-electricity-dashboard
+cd college-electricity-dashboard
+open index.html
+
+🔐 Login Credentials
+🛠️ Admin
+
+Username: admin
+
+Password: admin123
+
+👤 Faculty
+User	Username	Password	Flat
+Dr. Sharma	faculty1	faculty123	101
+Dr. Patel	faculty2	faculty123	201
+🧭 Usage Guide
+Admin
+
+Log in
+
+Go to Upload Data
+
+Upload meter readings (use sample CSV for testing)
+
+Process → Save → View dashboards
+
+Export reports as needed
+
+Faculty
+
+Log in
+
+View dashboard & current bill
+
+Download past bills
+
+Analyze usage trends
+
+📝 Sample Widgets / Badges
+
+You can add these if you want extra polish:
+
+Visitors Counter
+
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=just0dj.college-electricity-dashboard)
+
+
+Made With
+
+![Made With Love](https://img.shields.io/badge/Made%20with-❤️-red)
+
+
+JS Badge
+
+![JavaScript](https://img.shields.io/badge/JavaScript-Enabled-yellow)
+
+📄 License
+
 This project is licensed under the MIT License.
