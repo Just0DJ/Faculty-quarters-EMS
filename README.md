@@ -1,90 +1,78 @@
-⚡ College Electricity Billing Dashboard System
+# College Electricity Billing Dashboard System
 
-A modern, minimal, data-driven billing dashboard for college faculty buildings.
+A modern, minimal web application for managing electricity billing for college faculty buildings.
 
-<p align="center"> <img src="https://img.shields.io/github/last-commit/just0dj/college-electricity-dashboard?style=for-the-badge" /> <img src="https://img.shields.io/github/repo-size/just0dj/college-electricity-dashboard?style=for-the-badge" /> <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" /> </p> <p align="center"> <a href="https://app.netlify.com/sites/fqems/deploys"> <img src="https://api.netlify.com/api/v1/badges/3ef2ad7d-55a4-4956-bb4f-baacf77a4d6f/deploy-status" /> </a> </p>
-🎨 Modern, Minimal, Efficient
+## Features
 
-Built to eliminate manual email-based billing.
-Runs entirely in the browser, powered by client-side data engineering.
+### Admin Features
+- Upload Excel/CSV of meter readings
+- Auto-extract, clean, and display structured data
+- View all flats' bills
+- View dashboards and analytical charts (daily/monthly/yearly)
+- Export data as CSV/PDF
 
-🚀 Live Demo
+### Faculty Features
+- Secure login
+- View only their own unit and bill data
+- Charts: usage trend, previous bill comparison
+- Download their bill
 
-👉 Hosted on Netlify: add your link here
+## Data Engineering Pipeline
+1. Data Collection (Excel/CSV upload)
+2. Data Cleaning & Validation
+3. Data Transformation & Unit/Bill Calculation
+4. Data Storage (local storage)
+5. Data Analytics (summary, trends, comparisons)
+6. Visualization (charts, usage graphs)
+7. Reporting & Export (CSV/PDF)
 
-🔥 Features
-🛠️ Admin Dashboard
+## Setup Instructions
 
-✅ Upload Excel/CSV
-✅ Auto-parse & clean data
-✅ View all flats at once
-✅ Usage analytics (daily / monthly / yearly)
-✅ Export reports (CSV / PDF)
-✅ Persistent via localStorage
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Edge, Safari)
+- No server required (runs entirely in the browser)
 
-👤 Faculty Portal
+### Installation
+1. Download or clone this repository
+2. Open `index.html` in your web browser
 
-✅ Secure login
-✅ View your own meter & bill
-✅ Download PDF bill
-✅ Interactive usage charts
-✅ Past bill comparison
+### Login Credentials
 
-📊 Data Pipeline (Visual)
-┌────────────┐   ┌────────────┐   ┌─────────────┐   ┌────────────┐
-│   Upload   │ → │   Cleaning  │ → │ Calculation │ → │  Dashboard │
-└────────────┘   └────────────┘   └─────────────┘   └────────────┘
-                                 ↓
-                           Export / Charts
+#### Admin
+- Username: admin
+- Password: admin123
 
-🧰 Tech Stack
-Tech	Purpose
-HTML5	Structure
-CSS3	Modern UI & theming
-Vanilla JS	Logic + Storage
-Chart.js	Analytics & graphs
-SheetJS	Excel/CSV parsing
-jsPDF	PDF bills
-🗂️ Setup
-✅ Clone the Repository
-git clone https://github.com/just0dj/college-electricity-dashboard
-cd college-electricity-dashboard
+#### Faculty
+- Username: faculty1
+- Password: faculty123
+- (Dr. Sharma, Floor 1, Flat 101)
 
-✅ Run
+- Username: faculty2
+- Password: faculty123
+- (Dr. Patel, Floor 2, Flat 201)
 
-Just open:
+## Usage
 
-index.html
+### Admin
+1. Login with admin credentials
+2. Navigate to "Upload Data" to upload meter readings (use sample_data.csv for testing)
+3. Process the data and save it
+4. View dashboards, bills, and analytics
+5. Export data as needed
 
+### Faculty
+1. Login with faculty credentials
+2. View your dashboard with current bill and usage trends
+3. Navigate to "Bills" to view and download your bills
+4. Check "Analytics" for detailed usage charts
 
-No backend ✔
-No dependencies ✔
-Runs anywhere ✔
+## Technologies Used
+- HTML5
+- CSS3 (with CSS Variables for theming)
+- JavaScript (Vanilla)
+- Chart.js for data visualization
+- SheetJS for Excel parsing
+- jsPDF for PDF generation
 
-🔐 Login Credentials
-🛠️ Admin
-
-Username: admin
-
-Password: admin123
-
-👤 Faculty Accounts
-Faculty	Username	Password	Flat
-Dr. Sharma	faculty1	faculty123	101
-Dr. Patel	faculty2	faculty123	201
-📈 Screenshots (Optional Section)
-
-I can generate banner-style images for you if you want.
-
-🏷️ Widgets / Badges (Extra Styling)
-✔ Visitor Count
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=just0dj.college-electricity-dashboard)
-
-✔ Tech Badges
-![HTML](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-
-📄 License
-
-MIT License.
+## License
+This project is licensed under the MIT License.

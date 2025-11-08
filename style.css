@@ -353,18 +353,18 @@ h2 {
 
 .dashboard-charts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
 .chart-container.card {
     background-color: var(--card-bg-color);
     border-radius: 8px;
     box-shadow: 0 2px 4px var(--shadow-color);
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 15px;
+    margin-bottom: 0;
     transition: all 0.3s ease;
-    height: 400px; /* Fix chart height */
+    height: 320px; /* Adjust chart height */
     display: flex;
     flex-direction: column;
 }

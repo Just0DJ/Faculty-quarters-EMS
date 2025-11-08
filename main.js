@@ -215,6 +215,7 @@ function showNotification(message, type = 'info') {
 // --- Page Initializers ---
 function initDashboard() {
     updateDashboardWithNewData(fqems_uploaded_data);
+    createDashboardCharts();
 }
 
 function initBills() {
@@ -258,15 +259,27 @@ function initBills() {
         filteredData.forEach(row => {
             const billCard = document.createElement('div');
             billCard.className = 'bill-card';
+            const flat = String(getField(row, ['Flat Number', 'Flat']));
+            const floor = String(getField(row, ['Floor Number', 'Floor']));
             billCard.innerHTML = `
-                <h4>${getField(row, ['Month', 'Period'])}</h4>
-                <p><strong>Flat:</strong> ${getField(row, ['Flat Number', 'Flat'])}</p>
+                <h4>${getField(row, ['Month', 'Period']) || 'Bill'}</h4>
+                <p><strong>Flat:</strong> <a href="#" class="link-flat" data-flat="${flat}" data-floor="${floor}">${flat}</a></p>
                 <div class="bill-details">
                     <p><span>Units:</span> ${toNumber(getField(row, ['Total Units', 'Consumption']))}</p>
                     <p><span>Total Cost:</span> ₹${toNumber(getField(row, ['Total Cost', 'Amount']))}</p>
                 </div>
             `;
             billsContainer.appendChild(billCard);
+
+            if (user.role === 'Admin') {
+                const link = billCard.querySelector('.link-flat');
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openAssignModal(flat, floor);
+                    });
+                }
+            }
         });
     }
 
@@ -292,7 +305,8 @@ function initBills() {
 }
 
 function initAnalytics() {
-    createAnalyticsCharts();
+    populateAnalyticsFilters();
+    renderAnalytics();
 
     const exportCsvBtn = document.getElementById('export-csv');
     const exportPdfBtn = document.getElementById('export-pdf');
@@ -302,6 +316,19 @@ function initAnalytics() {
     if (exportPdfBtn) {
         exportPdfBtn.addEventListener('click', () => exportPDF(fqems_uploaded_data));
     }
+
+    const applyBtn = document.getElementById('analytics-apply');
+    const chartTypeSel = document.getElementById('analytics-chart-type');
+    const periodSel = document.getElementById('analytics-period');
+    const metricSel = document.getElementById('analytics-metric');
+    const monthsSel = document.getElementById('analytics-months');
+    const floorsSel = document.getElementById('analytics-floors');
+    const flatsSel = document.getElementById('analytics-flats');
+    const rerender = () => renderAnalytics();
+    [chartTypeSel, periodSel, metricSel, monthsSel, floorsSel, flatsSel].forEach(el => {
+        if (el) el.addEventListener('change', rerender);
+    });
+    if (applyBtn) applyBtn.addEventListener('click', rerender);
 }
 
 function initProfile() {
@@ -619,7 +646,7 @@ function processData(data) {
     }
     renderPreviewTable(data);
     updateDashboardWithNewData(data);
-    createAnalyticsCharts(); // Re-create charts with new data
+    renderAnalytics(); // Re-create charts with new data
     navigateTo('dashboard');
 }
 
@@ -671,6 +698,185 @@ function updateDashboardWithNewData(data) {
 }
 
 // --- Charting ---
+function createDashboardCharts() {
+    const data = fqems_uploaded_data;
+    if (!data || data.length === 0) return;
+
+    const unitsPerFlat = {};
+    const unitsPerFloor = {};
+    const monthlyData = {};
+    const dailyData = {};
+
+    data.forEach(row => {
+        const flat = getField(row, ['Flat Number', 'Flat']);
+        const floor = getField(row, ['Floor Number', 'Floor']);
+        const units = toNumber(getField(row, ['Total Units', 'Consumption']));
+        const month = getField(row, ['Month', 'Period']);
+        const date = getField(row, ['Date']);
+
+        if (flat) unitsPerFlat[flat] = (unitsPerFlat[flat] || 0) + units;
+        if (floor) unitsPerFloor[floor] = (unitsPerFloor[floor] || 0) + units;
+        if (month) monthlyData[month] = (monthlyData[month] || 0) + units;
+        if (date) dailyData[date] = (dailyData[date] || 0) + units;
+    });
+
+    // Monthly Usage Trend
+    const hasMonthly = Object.keys(monthlyData).length > 0;
+    createChart('usage-chart', 'line', {
+        labels: hasMonthly ? Object.keys(monthlyData) : Object.keys(unitsPerFlat),
+        datasets: [{
+            label: hasMonthly ? 'Units per Month' : 'Units per Flat',
+            data: hasMonthly ? Object.values(monthlyData) : Object.values(unitsPerFlat),
+            borderColor: '#4cc9f0',
+            backgroundColor: 'rgba(76, 201, 240, 0.2)',
+            tension: 0.2
+        }]
+    }, hasMonthly ? 'Monthly Usage Trend' : 'Units per Flat');
+
+    // Daily Consumption or fallback
+    const hasDaily = Object.keys(dailyData).length > 0;
+    createChart('daily-chart', 'bar', {
+        labels: hasDaily ? Object.keys(dailyData) : Object.keys(unitsPerFloor),
+        datasets: [{
+            label: hasDaily ? 'Units per Day' : 'Units per Floor',
+            data: hasDaily ? Object.values(dailyData) : Object.values(unitsPerFloor),
+            backgroundColor: '#4361ee'
+        }]
+    }, hasDaily ? 'Daily Consumption' : 'Units per Floor');
+
+    // Units per Flat summary
+    createChart('flat-summary-chart', 'bar', {
+        labels: Object.keys(unitsPerFlat),
+        datasets: [{
+            label: 'Units per Flat',
+            data: Object.values(unitsPerFlat),
+            backgroundColor: '#3a0ca3'
+        }]
+    }, 'Units per Flat');
+
+    // Floor Distribution summary
+    createChart('floor-summary-chart', 'pie', {
+        labels: Object.keys(unitsPerFloor),
+        datasets: [{
+            data: Object.values(unitsPerFloor),
+            backgroundColor: ['#4361ee', '#3a0ca3', '#4cc9f0', '#7209b7', '#f72585']
+        }]
+    }, 'Units per Floor');
+}
+
+function populateAnalyticsFilters() {
+    const monthsSel = document.getElementById('analytics-months');
+    const floorsSel = document.getElementById('analytics-floors');
+    const flatsSel = document.getElementById('analytics-flats');
+    if (!monthsSel || !floorsSel || !flatsSel) return;
+
+    const months = [...new Set(fqems_uploaded_data.map(row => getField(row, ['Month', 'Period'])).filter(Boolean))];
+    const floors = [...new Set(fqems_uploaded_data.map(row => getField(row, ['Floor Number', 'Floor'])).filter(Boolean))];
+    const flats = [...new Set(fqems_uploaded_data.map(row => getField(row, ['Flat Number', 'Flat'])).filter(Boolean))];
+
+    monthsSel.innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
+    floorsSel.innerHTML = floors.map(f => `<option value="${f}">${f}</option>`).join('');
+    flatsSel.innerHTML = flats.map(f => `<option value="${f}">${f}</option>`).join('');
+}
+
+function renderAnalytics() {
+    const chartTypeSel = document.getElementById('analytics-chart-type');
+    const periodSel = document.getElementById('analytics-period');
+    const metricSel = document.getElementById('analytics-metric');
+    const monthsSel = document.getElementById('analytics-months');
+    const floorsSel = document.getElementById('analytics-floors');
+    const flatsSel = document.getElementById('analytics-flats');
+
+    const chartType = chartTypeSel ? chartTypeSel.value : 'bar';
+    const metric = metricSel ? metricSel.value : 'units';
+    const selectedMonths = monthsSel ? Array.from(monthsSel.selectedOptions).map(o => o.value) : [];
+    const selectedFloors = floorsSel ? Array.from(floorsSel.selectedOptions).map(o => o.value) : [];
+    const selectedFlats = flatsSel ? Array.from(flatsSel.selectedOptions).map(o => o.value) : [];
+
+    let rows = fqems_uploaded_data.slice();
+    if (selectedMonths.length) rows = rows.filter(r => selectedMonths.includes(getField(r, ['Month', 'Period'])));
+    if (selectedFloors.length) rows = rows.filter(r => selectedFloors.includes(String(getField(r, ['Floor', 'Floor Number']))));
+    if (selectedFlats.length) rows = rows.filter(r => selectedFlats.includes(String(getField(r, ['Flat', 'Flat Number']))));
+
+    const valueField = metric === 'cost' ? 'Cost (₹)' : 'Consumption (kWh)';
+
+    // Overview: per Flat
+    const perFlat = {};
+    rows.forEach(r => {
+        const flat = getField(r, ['Flat', 'Flat Number']);
+        const val = toNumber(r[valueField]);
+        if (flat) perFlat[flat] = (perFlat[flat] || 0) + val;
+    });
+    createChart('overview-chart', chartType, {
+        labels: Object.keys(perFlat),
+        datasets: [{ label: `${metric === 'cost' ? 'Cost' : 'Units'} per Flat`, data: Object.values(perFlat), backgroundColor: '#4361ee', borderColor: '#4361ee' }]
+    }, 'Consumption Overview');
+
+    // Floor-wise
+    const perFloor = {};
+    rows.forEach(r => {
+        const floor = getField(r, ['Floor', 'Floor Number']);
+        const val = toNumber(r[valueField]);
+        if (floor) perFloor[floor] = (perFloor[floor] || 0) + val;
+    });
+    createChart('floor-chart', chartType === 'line' ? 'bar' : chartType, {
+        labels: Object.keys(perFloor),
+        datasets: [{ data: Object.values(perFloor), backgroundColor: ['#4361ee', '#3a0ca3', '#4cc9f0', '#7209b7', '#f72585'] }]
+    }, 'Floor-wise Distribution');
+
+    // Time series per month
+    const perMonth = {};
+    rows.forEach(r => {
+        const month = getField(r, ['Month', 'Period']);
+        const val = toNumber(r[valueField]);
+        if (month) perMonth[month] = (perMonth[month] || 0) + val;
+    });
+    createChart('flat-chart', chartType === 'pie' || chartType === 'doughnut' ? 'line' : chartType, {
+        labels: Object.keys(perMonth),
+        datasets: [{ label: `${metric === 'cost' ? 'Cost' : 'Units'} Over Time`, data: Object.values(perMonth), borderColor: '#4cc9f0', backgroundColor: 'rgba(76, 201, 240, 0.2)', tension: 0.1 }]
+    }, 'Flat-wise Over Time');
+}
+
+// --- Bills: Assign Flat to Faculty ---
+function openAssignModal(flat, floor) {
+    const modal = document.getElementById('assign-modal');
+    const label = document.getElementById('assign-flat-label');
+    const select = document.getElementById('assign-faculty-select');
+    const saveBtn = document.getElementById('assign-save');
+    if (!modal || !label || !select || !saveBtn) return;
+
+    label.textContent = `Flat: ${flat}${floor ? ` (Floor ${floor})` : ''}`;
+    const facultyUsers = fqems_users.filter(u => u.role === 'Faculty');
+    const currentOwner = facultyUsers.find(u => (u.flats || []).includes(String(flat)));
+    select.innerHTML = facultyUsers.map(u => `<option value="${u.username}" ${currentOwner && currentOwner.username === u.username ? 'selected' : ''}>${u.name} (${u.username})</option>`).join('');
+
+    modal.style.display = 'flex';
+
+    const closeEls = modal.querySelectorAll('.close-modal, .close-btn');
+    closeEls.forEach(el => {
+        el.onclick = () => { modal.style.display = 'none'; };
+    });
+    modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+    saveBtn.onclick = () => {
+        const username = select.value;
+        if (!username) { showNotification('Please select a faculty user', 'error'); return; }
+        // Remove flat from all faculty users first
+        facultyUsers.forEach(u => {
+            u.flats = (u.flats || []).filter(f => String(f) !== String(flat));
+        });
+        // Assign to selected user
+        const target = facultyUsers.find(u => u.username === username);
+        if (target) {
+            target.flats = Array.from(new Set([...(target.flats || []), String(flat)]));
+            saveUsersToLocalStorage();
+            showNotification(`Assigned flat ${flat} to ${target.name}`, 'success');
+            modal.style.display = 'none';
+        } else {
+            showNotification('Selected user not found', 'error');
+        }
+    };
+}
 function createAnalyticsCharts() {
     const data = fqems_uploaded_data;
     if (!data || data.length === 0) return;

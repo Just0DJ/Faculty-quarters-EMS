@@ -119,7 +119,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="analytics-section admin-only">
+                <div class="analytics-section">
                     <h3>Detailed Analytics</h3>
                     <div class="dashboard-charts">
                         <div class="chart-container card">
@@ -129,6 +129,14 @@
                         <div class="chart-container card">
                             <h3>Daily Consumption</h3>
                             <canvas id="daily-chart"></canvas>
+                        </div>
+                        <div class="chart-container card">
+                            <h3>Units per Flat</h3>
+                            <canvas id="flat-summary-chart"></canvas>
+                        </div>
+                        <div class="chart-container card">
+                            <h3>Floor Distribution</h3>
+                            <canvas id="floor-summary-chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -241,6 +249,30 @@
                             <option value="cost">Cost</option>
                         </select>
                     </div>
+                    <div class="filter-group">
+                        <label for="analytics-chart-type">Chart Type:</label>
+                        <select id="analytics-chart-type">
+                            <option value="bar" selected>Bar</option>
+                            <option value="line">Line</option>
+                            <option value="pie">Pie</option>
+                            <option value="doughnut">Doughnut</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="analytics-months">Months:</label>
+                        <select id="analytics-months" multiple></select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="analytics-floors">Floors:</label>
+                        <select id="analytics-floors" multiple></select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="analytics-flats">Flats:</label>
+                        <select id="analytics-flats" multiple></select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" id="analytics-apply">Apply Filters</button>
+                    </div>
                 </div>
                 <div class="analytics-charts">
                     <div class="chart-container full-width">
@@ -318,6 +350,27 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" id="download-bill">Download PDF</button>
                 <button class="btn btn-secondary close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for assigning flat to faculty -->
+    <div class="modal" id="assign-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Flat to Faculty</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="assign-flat-label">Flat: -</p>
+                <div class="form-group">
+                    <label for="assign-faculty-select">Select Faculty:</label>
+                    <select id="assign-faculty-select"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="assign-save">Save Assignment</button>
+                <button class="btn btn-secondary close-btn">Cancel</button>
             </div>
         </div>
     </div>
